@@ -10,7 +10,7 @@ const app = express();
 app.use(express.json());
 
 app.get("/", (req, res) => {
-  res.status(200).json("This is get method");
+  res.status(200).json(Users);
 });
 
 app.post("/address", (req, res) => {
@@ -26,7 +26,7 @@ app.post("/address", (req, res) => {
 app.post("/latlong", (req, res) => {
   let { latlon } = req.body;
   latlong(latlon, (error, { formatted, postcode, timezone }) => {
-    let userObject = {};
+    let userObject = [];
     if (error) {
       res.status(400).send(error);
     }
@@ -34,7 +34,8 @@ app.post("/latlong", (req, res) => {
 
     getLocation(userObject, postCode);
 
-    if (userObject && Object.keys(userObject).length > 0) {
+    if (userObject && userObject.length > 0) {
+      console.log("this is userobject from res", userObject)
       res.status(200).send(userObject);
     } else {
       console.log("pincode is invalid or not found");
@@ -45,22 +46,28 @@ app.post("/latlong", (req, res) => {
   });
 });
 
-function getLocation(userObj, postCode) {
+function getLocation(userObjarr, postCode) {
+  let userObj = {};
   Users.forEach((user) => {
     let userkey = Object.keys(user);
     let pinkey = user[userkey];
-    console.log("this is userkey", userkey);
+    // console.log("this is userkey", userkey);
+    // console.log("this is pinkey", pinkey)
+
     if (pinkey.hasOwnProperty(postCode)) {
+      // console.log("this is postcode", postCode)
       userObj.user = userkey[0];
       userObj.pincode = postCode;
       userObj.address = pinkey[postCode];
+      userObjarr.push(userObj);
+      userObj = {}
     } else {
       console.log("pin not found");
     }
   });
 
-  console.log(userObj);
-  return userObj;
+  // console.log(userObjarr);
+  return userObjarr;
 }
 
 app.listen(port, () => {

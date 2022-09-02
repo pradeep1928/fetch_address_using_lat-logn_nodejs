@@ -27,7 +27,7 @@ const users = [
           address2: "apna bazar, near azad nagar, viradesai road",
           address3: "rajput derry, link road",
         },
-        400069: {
+        400099: {
           address1: "swami samarth nagar, lokhandwala circle",
           address2: "raheja colony, near infinity mall, link road",
           address3: "swami samarth garder, lokandwala complex backroad",
@@ -36,12 +36,12 @@ const users = [
     },
     {
       user3: {
-        400099: {
+        400093: {
           address1: "apna colony, near dn nagar metro station",
           address2: "apna bazar, near azad nagar, viradesai road",
           address3: "rajput derry, link road",
         },
-        400001: {
+        400099: {
           address1: "swami samarth nagar, lokhandwala circle",
           address2: "raheja colony, near infinity mall, link road",
           address3: "swami samarth garder, lokandwala complex backroad",
