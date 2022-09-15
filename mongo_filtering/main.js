@@ -22,25 +22,22 @@ const inserttoDb = (insertDb, bigarr) => {
     }
     // console.log("this is items", items);
   });
+
+  insertDb
+    .countDocuments()
+    .then((doc_counts) => {
+      console.log("count of Documents inserted --> ", doc_counts);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 };
-
-// const insertOnebyOne = (insertDb, bigarr) => {
-//   insertDb.insert(bigarr, function (err, items) {
-//     if (err) {
-//       console.log(err);
-//     }
-//     // console.log("this is items", items);
-//   });
-// };
-
 
 const main = async () => {
   const dbInstance = await connectDB();
   const insertDb = dbInstance.db("insertdb").collection("collection");
   const findDb = dbInstance.db("msgdb").collection("msgcoll");
-  // console.time("inserting");
   // inserttoDb(findDb, userdata);
-  // console.timeEnd("inserting")
   let bigarr = [];
   let stream = findDb.find().stream();
   stream
@@ -50,23 +47,15 @@ const main = async () => {
       data.msg = encrypedData.encryptData(data.msg);
       bigarr.push(data);
       if (bigarr.length == 20000) {
-        console.time("inserting");
         inserttoDb(insertDb, bigarr);
-        console.log("length of the array >>>.", bigarr.length);
         bigarr = [];
-        console.timeEnd("inserting");
       }
     })
     .on("end", () => {
       if (bigarr.length) {
-        console.time("ending");
         inserttoDb(insertDb, bigarr);
-        console.log("length of the array at ending >>>.", bigarr.length);
-        console.timeEnd("ending");
       }
-      // console.log("last bigarr", bigarr);
     });
 };
-
 
 main();

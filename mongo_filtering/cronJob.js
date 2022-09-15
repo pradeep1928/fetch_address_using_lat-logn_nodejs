@@ -37,30 +37,53 @@ function secondsToDhms(seconds) {
   return days;
 }
 
-
-
 const main = async () => {
   const dbInstance = await connectDB();
   const findAndUpdateDb = dbInstance.db("crondb").collection("croncoll");
-  //   insertIntoDb(findAndUpdateDb)
+  // insertIntoDb(findAndUpdateDb)
   const foundData = findAndUpdateDb.find();
   foundData.forEach((element) => {
-    let days_to_add = secondsToDhms(apiDataObj.expires_in);
-    let api_access_token = apiDataObj.access_token;
-    let newDate = moment(element.expiry_date)
-      .add(days_to_add, "days")
-      .format("YYYY-MM-DD");
-    findAndUpdateDb.findOneAndUpdate(
-      { username: element.username },
-      { $set: { expiry_date: newDate, access_token: api_access_token } },
-      function (err, result) {
-        if (err) {
-          console.log("------error in updating-----------", err);
+    let today = moment().format("YYYY-MM-DD");
+    let date = element.expiry_date;
+    let tomorrow = moment(date, "YYYY-MM-DD");
+    let dayDifference = tomorrow.diff(today, "days");
+    console.log("-------difference in dates--------", dayDifference);
+    if (dayDifference <= 1) {
+      let days_to_add = secondsToDhms(apiDataObj.expires_in);
+      let api_access_token = apiDataObj.access_token;
+      let newDate = moment(element.expiry_date)
+        .add(days_to_add, "days")
+        .format("YYYY-MM-DD");
+      findAndUpdateDb.updateOne(
+        { username: element.username },
+        { $set: { expiry_date: newDate, access_token: api_access_token } },
+        { upsert: true },
+        function (err, result) {
+          if (err) {
+            console.log("------error in updating-----------", err);
+          }
+          console.log("updation done", result);
         }
-        console.log("updation done");
-      }
-    );
+      );
+    }
   });
 };
 
 main();
+
+// let today = moment().format("YYYY-MM-DD")
+// let date = "2022-09-16"
+// let tommorow = moment(date, "YYYY-MM-DD");
+// let diffdays = tommorow.diff(today, 'days')
+
+// var a = moment(today);
+// var b = moment(tommorow);
+
+// console.log("-------day difference-------", diffdays)
+
+// if ((tommorow - today) <= 1) {
+//   console.log("access token is set")
+// }
+
+// console.log("----today------", today)
+// console.log("----tommorow------", tommorow)
