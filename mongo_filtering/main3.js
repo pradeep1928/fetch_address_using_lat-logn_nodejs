@@ -1,5 +1,6 @@
 const MongoClient = require("mongodb").MongoClient;
 const { performance } = require("perf_hooks");
+const moment = require("moment");
 const encrypt = require("./encryptDecrypt");
 const userdata = require("./data");
 const encrypedData = new encrypt();
@@ -40,9 +41,11 @@ const findCount = async (insertDb) => {
 };
 
 const main = async () => {
+  let getDate =  moment("20220521").format("YYYYMMDD");
+  console.log("---getdate---", getDate)
   const dbInstance = await connectDB();
-  const insertDb = dbInstance.db("insertdb").collection("collection");
-  const findDb = dbInstance.db("msgdb").collection("msgcoll");
+  const insertDb = dbInstance.db(`vivasmpp_${getDate}_encrypted`).collection("collection");
+  const findDb = dbInstance.db(`vivasmpp_${getDate}`).collection("msgcoll");
   // inserttoDb(findDb, userdata);
   let bigarr = [];
   let stream = findDb.find().stream();
@@ -65,13 +68,12 @@ const main = async () => {
         console.log("-----end of process-----");
       }
     });
+    getDate = moment(getDate).add(1, 'days').format("YYYYMMDD")
+    console.log("---nextDate---", getDate)  
 };
 
-//  main();
 
 
-// let start = performance.now()
-// for (let i = 0; i< 10000000; i++) {}
-// let end = performance.now()
-// console.log(`execution time: ${end - start} ms`)
+ main();
+
 

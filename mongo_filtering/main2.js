@@ -16,6 +16,8 @@ const connectDB = async () => {
   return db;
 };
 
+
+
 const inserttoDb = (insertDb, bigarr) => {
   insertDb.insertMany(bigarr, function (err, items) {
     if (err) {
@@ -23,15 +25,6 @@ const inserttoDb = (insertDb, bigarr) => {
     }
     console.log("chunk inserted");
   });
-
-  // insertDb
-  //   .countDocuments()
-  //   .then((doc_counts) => {
-  //     console.log("count of Documents inserted --> ", doc_counts);
-  //   })
-  //   .catch((err) => {
-  //     console.log(err);
-  //   });
 };
 
 const findCount = async (insertDb) => {
@@ -42,36 +35,26 @@ const findCount = async (insertDb) => {
 const main = async () => {
   const dbInstance = await connectDB();
   const insertDb = dbInstance.db("insertdb").collection("collection");
-  const findDb = dbInstance.db("msgdb").collection("msgcoll");
+  // const findDb = dbInstance.db("msgdb").collection("msgcoll");
+  const findDb = dbInstance.db("msgdb")
+
+  findDb.admin().listDatabases(function(err, result) {
+    console.log('------databases------', result.databases)
+  })
   // inserttoDb(findDb, userdata);
   let bigarr = [];
-  let stream = findDb.find().stream();
-  stream
-    .on("data", (data) => {
-      data.mobile = data.mobile.toString();
-      data.mobile = encrypedData.encryptData(data.mobile);
-      data.msg = encrypedData.encryptData(data.msg);
-      bigarr.push(data);
-      if (bigarr.length == 20000) {
-        inserttoDb(insertDb, bigarr);
-        findCount(insertDb);
-        bigarr = [];
-      }
-    })
-    .on("end", () => {
-      if (bigarr.length) {
-        inserttoDb(insertDb, bigarr);
-        findCount(insertDb);
-        console.log("-----end of process-----");
-      }
-    });
+  // let stream = findDb.find();
+  // stream.forEach((data) => {
+  //   data.mobile = data.mobile.toString();
+  //   data.mobile = encrypedData.encryptData(data.mobile);
+  //   data.msg = encrypedData.encryptData(data.msg);
+  //   bigarr.push(data);
+  //   if (bigarr.length == 20000) {
+  //     // inserttoDb(insertDb, bigarr);
+  //     // findCount(insertDb);
+  //     bigarr = [];
+  //   }
+  // });
 };
 
-//  main();
-
-
-// let start = performance.now()
-// for (let i = 0; i< 10000000; i++) {}
-// let end = performance.now()
-// console.log(`execution time: ${end - start} ms`)
-
+main();

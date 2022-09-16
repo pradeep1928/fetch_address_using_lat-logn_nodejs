@@ -31,7 +31,7 @@ let apiDataObj = {
   expires_in: 4402870,
 };
 
-function secondsToDhms(seconds) {
+function secondsToDays(seconds) {
   seconds = Number(seconds);
   var days = Math.floor(seconds / (3600 * 24));
   return days;
@@ -49,7 +49,7 @@ const main = async () => {
     let dayDifference = tomorrow.diff(today, "days");
     console.log("-------difference in dates--------", dayDifference);
     if (dayDifference <= 1) {
-      let days_to_add = secondsToDhms(apiDataObj.expires_in);
+      let days_to_add = secondsToDays(apiDataObj.expires_in);
       let api_access_token = apiDataObj.access_token;
       let newDate = moment(element.expiry_date)
         .add(days_to_add, "days")
@@ -62,7 +62,7 @@ const main = async () => {
           if (err) {
             console.log("------error in updating-----------", err);
           }
-          console.log("updation done", result);
+          console.log("updation done. added days", days_to_add);
         }
       );
     }
