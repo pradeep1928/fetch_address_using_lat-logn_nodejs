@@ -5,11 +5,12 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon cronJob.js"
+    "start": "nodemon main3.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "async": "^3.2.4",
     "encrypy-decrypt": "git+http://danish.galiyara:NHaBKpsXVkrkQKmUxest@git.vivaconnect.co/helo-whatsapp/encrypt-decrypt.git#3.0.0",
     "moment": "^2.29.4",
     "mongodb": "^4.9.1",

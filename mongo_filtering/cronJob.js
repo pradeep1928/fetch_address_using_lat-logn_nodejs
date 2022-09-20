@@ -15,14 +15,14 @@ const connectDB = async () => {
   return db;
 };
 
-function insertIntoDb(dbname) {
-  dbname.insertMany(cronData, function (err, result) {
-    if (err) {
-      console.log("------error in inserting", err);
-    }
-    console.log("data inserted successfully", result);
-  });
-}
+// function insertIntoDb(dbname) {
+//   dbname.insertMany(cronData, function (err, result) {
+//     if (err) {
+//       console.log("------error in inserting", err);
+//     }
+//     console.log("data inserted successfully", result);
+//   });
+// }
 
 let apiDataObj = {
   access_token:

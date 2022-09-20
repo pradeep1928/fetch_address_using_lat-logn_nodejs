@@ -17,12 +17,14 @@ const connectDB = async () => {
   return db;
 };
 
-const inserttoDb = (insertDb, bigarr) => {
-  insertDb.insertMany(bigarr, function (err, items) {
+const inserttoDb = async (insertDb, bigarr) => {
+  insertDb.insertMany(bigarr, async function (err, items) {
     if (err) {
       console.log(err);
     }
+    let itemsCount = await items.length
     console.log("chunk inserted");
+    return itemsCount
   });
 
   // insertDb
@@ -36,9 +38,33 @@ const inserttoDb = (insertDb, bigarr) => {
 };
 
 const findCount = async (insertDb) => {
-  let countOfDocs = await insertDb.countDocuments();
+  let countOfDocs = await insertDb.countDocuments()
   console.log("count of Documents inserted --> ", countOfDocs);
+  return countOfDocs
 };
+
+const passData = async (stream, insertDb, bigarr) => {
+   stream
+  .on("data", (data) => {
+    data.mobile = data.mobile.toString();
+    data.mobile = encrypedData.encryptData(data.mobile);
+    data.msg = encrypedData.encryptData(data.msg);
+    bigarr.push(data);
+    if (bigarr.length == 20000) {
+      inserttoDb(insertDb, bigarr);
+      bigarr = [];
+      console.log("------bigarr1-----", bigarr.length)
+    }
+  })
+  .on("end",  () => {
+    if (bigarr.length) {
+       inserttoDb(insertDb, bigarr)
+    }
+  });
+
+}
+
+let bigarr = [];
 
 const main = async () => {
   let getDate =  moment("20220521").format("YYYYMMDD");
@@ -46,34 +72,21 @@ const main = async () => {
   const dbInstance = await connectDB();
   const insertDb = dbInstance.db(`vivasmpp_${getDate}_encrypted`).collection("collection");
   const findDb = dbInstance.db(`vivasmpp_${getDate}`).collection("msgcoll");
+  let countOfDocsOfFetched = await findDb.countDocuments();
+  console.log("count of Documents fetched --> ", countOfDocsOfFetched);
+  let countOfDocsOfInserted;
   // inserttoDb(findDb, userdata);
-  let bigarr = [];
   let stream = findDb.find().stream();
-  stream
-    .on("data", (data) => {
-      data.mobile = data.mobile.toString();
-      data.mobile = encrypedData.encryptData(data.mobile);
-      data.msg = encrypedData.encryptData(data.msg);
-      bigarr.push(data);
-      if (bigarr.length == 20000) {
-        inserttoDb(insertDb, bigarr);
-        findCount(insertDb);
-        bigarr = [];
-      }
-    })
-    .on("end", () => {
-      if (bigarr.length) {
-        inserttoDb(insertDb, bigarr);
-        findCount(insertDb);
-        console.log("-----end of process-----");
-      }
-    });
-    getDate = moment(getDate).add(1, 'days').format("YYYYMMDD")
-    console.log("---nextDate---", getDate)  
+  await passData(stream, insertDb, bigarr)
+  findCount(insertDb)
 };
 
+// console.log("count of Documents inserted --> ", countOfDocsOfInserted);
+// console.log("-----end of process-----");  
+// if (countOfDocsOfFetched > countOfDocsOfInserted) {
+//   getDate = moment(getDate).add(1, 'days').format("YYYYMMDD")
+//   console.log("---nextDate---", getDate)    
+// }
 
-
- main();
-
+ main()
 
