@@ -33,7 +33,7 @@ const findCount = async (insertDb) => {
 const main = async () => {
   const dbInstance = await connectDB();
   const insertDb = dbInstance.db("insertdb").collection("collection");
-  const findDb = dbInstance.db("vivasmpp_20220523").collection("msgcoll");
+  const findDb = dbInstance.db("vivasmpp_20220521").collection("msgcoll");
   // const findDb = dbInstance.db("msgdb")
 
   // findDb.admin().listDatabases(function(err, result) {
@@ -58,14 +58,3 @@ const main = async () => {
 // main();
 
 
-console.log(this)
-
-let obj = {
-  name : 'pradeep',
-  role: 'webdev',
-  fun() {
-    console.log(this.name)
-  }
-}
-
-obj.fun()

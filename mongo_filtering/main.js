@@ -26,16 +26,16 @@ const inserttoDb = (insertDb, bigarr) => {
   });
 };
 
-// const findCount = async (insertDb) => {
-//   let countOfDocs = await insertDb.countDocuments();
-//   console.log("count of Documents inserted --> ", countOfDocs);
-//   return countOfDocs;
-// };
+const findCount = async (insertDb) => {
+  let countOfDocs = await insertDb.countDocuments();
+  console.log("count of Documents inserted --> ", countOfDocs);
+  return countOfDocs;
+};
 
 const main = async () => {
   let getdate = moment("20220521").format("YYYYMMDD");
   let lastdate = moment("20220523").format("YYYYMMDD");
-  let endDate = moment("20220523", "YYYYMMDD");
+  let endDate = moment("20220524", "YYYYMMDD");
   let dayDifference = endDate.diff(getdate, "days");
   console.log("--firstdate--", getdate);
   console.log("--lastdate--", endDate);
@@ -57,22 +57,33 @@ const main = async () => {
           bigarr.push(data);
           if (bigarr.length == 20000) {
             inserttoDb(insertDb, bigarr);
+            findCount(insertDb)
             bigarr = [];
           }
         })
         .on("end", () => {
           if (bigarr.length) {
             inserttoDb(insertDb, bigarr);
+            findCount(insertDb)
             console.log("----ending----")
 
           }
         });
       getdate = moment(getdate).add(1, "days").format("YYYYMMDD");
     }
+
 };
 
-main();
+function print() {
+  return "----All done----"
+}
 
+const aftermain = async () => {
+  await main();
+  print()
+}
+
+aftermain()
 
 // let date1 = moment("20220521");
 // let date2 = moment("20220523")
